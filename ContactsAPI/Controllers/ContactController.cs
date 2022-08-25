@@ -69,7 +69,7 @@ namespace ContactsAPI.Controllers
             var Contact = await dbcontext.Contact.FindAsync(id);
             if (Contact!=null)
             {
-                 dbcontext.Remove(Contact);
+                dbcontext.Remove(Contact);
                 await dbcontext.SaveChangesAsync();
                 return Ok(Contact);
             }
