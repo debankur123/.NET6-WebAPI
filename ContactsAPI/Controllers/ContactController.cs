@@ -16,9 +16,20 @@ namespace ContactsAPI.Controllers
             this.dbcontext = dbcontext;
         }
         [HttpGet]
-        public async Task<IActionResult> GetContacts()
+        public async Task<IActionResult> GetAllContacts()
         {
             return Ok(await dbcontext.Contact.ToListAsync());
+        }
+        [HttpGet]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> GetContact([FromRoute] Guid id)
+        {
+            var contact = await dbcontext.Contact.FindAsync(id);
+            if (contact==null)
+            {
+                return NotFound();
+            }
+            return Ok(contact);
         }
         [HttpPost]
         public async Task<IActionResult> AddContact(AddContactRequest _addcontact)
@@ -46,6 +57,19 @@ namespace ContactsAPI.Controllers
                 Contact.Email = _UpdateContact.Email;
                 Contact.Phone = _UpdateContact.Phone;
                 Contact.Address = _UpdateContact.Address;
+                await dbcontext.SaveChangesAsync();
+                return Ok(Contact);
+            }
+            return NotFound();
+        }
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> DeleteContact([FromRoute] Guid id)
+        {
+            var Contact = await dbcontext.Contact.FindAsync(id);
+            if (Contact!=null)
+            {
+                 dbcontext.Remove(Contact);
                 await dbcontext.SaveChangesAsync();
                 return Ok(Contact);
             }
